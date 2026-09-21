@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Wildlife Explorer | Record Encounter</title><link rel="stylesheet" href="css/style.css"></head>
+<body data-page="encounter">
+  <header class="site-header"></header>
+  <main class="page-main">
+    <section class="page-title reveal"><p class="eyebrow">Field Journal</p><h1>Record an Encounter</h1><p>Capture a moment from the wild.</p></section>
+    <section class="section form-shell reveal">
+      <form id="encounterForm">
+        <div class="form-grid">
+          <label>What did you see?<select id="recordAnimal"><option>Asian Elephant</option><option>Sambar Deer</option><option>Bengal Tiger</option><option>King Cobra</option></select></label>
+          <label>Where did you see it?<select id="recordLocation"><option>Periyar</option><option>Wayanad</option><option>Silent Valley</option><option>Eravikulam</option></select></label>
+          <label>Date<input id="recordDate" type="date"></label>
+          <label class="time-field">Time
+            <div class="fancy-time">
+              <span class="time-icon">☀</span>
+              <input id="recordTime" type="time">
+              <span class="time-period" id="timePeriod">PM</span>
+            </div>
+            <div class="time-presets" aria-label="Quick time presets">
+              <button type="button" data-time="06:00">Dawn</button>
+              <button type="button" data-time="12:00">Noon</button>
+              <button type="button" data-time="18:30">Dusk</button>
+              <button type="button" data-time="21:00">Night</button>
+            </div>
+          </label>
+          <label>Season<select id="recordSeason"><option>Spring</option><option>Summer</option><option>Monsoon</option><option>Winter</option></select></label>
+        </div>
+        <div class="suggestion-panel" id="recordSuggestions"></div>
+        <div class="warning-card" id="sensitiveWarning">⚠️ <strong>Conservation-sensitive observation</strong><p>For sensitive wildlife, avoid publicly sharing exact locations.</p><label>Google Maps Link<input type="url" placeholder="Paste Google Maps link"></label></div>
+        <button class="btn btn-primary" type="submit">Record Encounter</button>
+      </form>
+    </section>
+    <div class="modal" id="successModal"><div class="modal-card"><button class="modal-close" aria-label="Close modal">×</button><div class="success-icon">✓</div><h2>Encounter Recorded</h2><p>Your wildlife observation has been added.</p></div></div>
+  </main>
+  <script src="js/script.js"></script>
+</body>
+</html>
