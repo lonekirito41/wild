@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Wildlife Explorer | Home</title>
+  <title>Wild Life Seasonal Tracker | Home</title>
   <link rel="preconnect" href="https://images.unsplash.com">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body data-page="home">
   <header class="site-header">
     <nav class="nav-shell">
-      <a class="logo" href="index.html"><span>🐾</span> Wildlife Explorer</a>
+      <a class="logo" href="index.html"><span>🐾</span> Wild Life Seasonal Tracker</a>
       <button class="menu-toggle" aria-label="Open navigation"><span></span><span></span><span></span></button>
       <div class="nav-links">
         <a href="index.html" data-nav="home">Home</a>
@@ -20,9 +20,20 @@
         <a href="identifier.html" data-nav="identifier">Identifier</a>
         <a href="my-wildlife.html" data-nav="my-wildlife">My Wildlife</a>
         <a href="insights.html" data-nav="insights">Insights</a>
-        <a href="conservation.html" data-nav="conservation">Conservation</a>
         <button class="theme-toggle" type="button" aria-label="Switch to dark mode" title="Switch theme"><span class="theme-icon">☾</span></button>
         <a class="btn btn-primary nav-cta" href="encounter.html">+ Record Encounter</a>
+        <div class="account-menu">
+          <button class="account-button" type="button" aria-label="Open account menu" aria-expanded="false"><span></span></button>
+          <div class="account-panel">
+            <strong id="accountName">Guest</strong>
+            <p id="accountEmail">No email</p>
+            <div class="account-auth-actions">
+              <button class="btn btn-light auth-trigger" type="button" data-auth-mode="login">Login</button>
+              <button class="btn btn-primary auth-trigger" type="button" data-auth-mode="register">Register</button>
+            </div>
+            <button class="btn btn-light auth-logout" type="button">Logout</button>
+          </div>
+        </div>
       </div>
     </nav>
   </header>
@@ -35,8 +46,8 @@
         <h1>Explore. Observe. Remember.</h1>
         <p>Discover wildlife, record your encounters, and explore your observation journey.</p>
         <div class="hero-actions">
-          <a class="btn btn-primary" href="wildlife.html">Explore Wildlife</a>
-          <a class="btn btn-ghost" href="encounter.html">Record Encounter</a>
+          <a class="btn btn-primary hero-btn hero-btn-primary" href="wildlife.html">Explore Wildlife</a>
+          <a class="btn btn-ghost hero-btn hero-btn-secondary" href="encounter.html">Record Encounter</a>
         </div>
       </div>
     </section>
@@ -57,7 +68,7 @@
           <h2>Asian Elephant</h2>
           <p>Periyar Wildlife Reserve</p>
           <div class="meta-line"><span>19 September 2026</span><span>6:42 PM</span><span>Monsoon</span></div>
-          <a class="btn btn-primary" href="encounter-details.html">View Encounter</a>
+          <a class="btn btn-primary" href="encounter-details.html?encounter=asian-elephant-periyar-2026-09-19">View Encounter</a>
         </div>
       </article>
     </section>
@@ -70,16 +81,6 @@
       <div class="card-grid animals-featured" id="featuredAnimals"></div>
     </section>
 
-    <section class="section">
-      <article class="conservation-band reveal">
-        <div>
-          <p class="eyebrow">Conservation Highlight</p>
-          <h2>Protect the Wild</h2>
-          <p>Responsible observation helps protect wildlife and their habitats.</p>
-        </div>
-        <a class="btn btn-light" href="conservation.html">Learn About Conservation</a>
-      </article>
-    </section>
   </main>
   <script src="js/script.js"></script>
 </body>

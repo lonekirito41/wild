@@ -3,11 +3,11 @@ const animals = [
   { name: "Bengal Tiger", category: "Mammal", status: "Endangered", location: "Wayanad", season: "Winter", description: "A powerful apex predator that moves silently through dense cover.", image: "https://images.unsplash.com/photo-1549480017-d76466a4b7e8?auto=format&fit=crop&w=900&q=80" },
   { name: "Indian Leopard", category: "Mammal", status: "Vulnerable", location: "Silent Valley", season: "Summer", description: "An adaptable spotted cat often seen near rocky forest corridors.", image: "https://images.unsplash.com/photo-1544979590-37e9b47eb705?auto=format&fit=crop&w=900&q=80" },
   { name: "Sambar Deer", category: "Mammal", status: "Vulnerable", location: "Periyar", season: "Monsoon", description: "A large forest deer with a deep alarm call and twilight habits.", image: "https://images.unsplash.com/photo-1484406566174-9da000fda645?auto=format&fit=crop&w=900&q=80" },
-  { name: "Spotted Deer", category: "Mammal", status: "Least Concern", location: "Wayanad", season: "Spring", description: "Graceful herds with white-flecked coats that shine in broken light.", image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80" },
-  { name: "Indian Gaur", category: "Mammal", status: "Vulnerable", location: "Silent Valley", season: "Monsoon", description: "A muscular wild bovine with pale stockings and a high ridgeback.", image: "https://images.unsplash.com/photo-1521651201144-634f700b36ef?auto=format&fit=crop&w=900&q=80" },
+  { name: "Spotted Deer", category: "Mammal", status: "Least Concern", location: "Wayanad", season: "Spring", description: "Graceful herds with white-flecked coats that shine in broken light.", image: "https://upload.wikimedia.org/wikipedia/commons/a/a7/A_chital_stag_1.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original" },
+  { name: "Indian Gaur", category: "Mammal", status: "Vulnerable", location: "Silent Valley", season: "Monsoon", description: "A muscular wild bovine with pale stockings and a high ridgeback.", image: "https://t3.ftcdn.net/jpg/03/88/25/88/360_F_388258874_nHzvnXwqV0EaJQb0vBbJzl5Eq393YrsC.jpg" },
   { name: "Malabar Giant Squirrel", category: "Mammal", status: "Least Concern", location: "Thattekad", season: "Monsoon", description: "A vivid canopy acrobat with rust, cream, and black fur.", image: "https://images.unsplash.com/photo-1507666405895-422eee7d517f?auto=format&fit=crop&w=900&q=80" },
   { name: "Indian Peafowl", category: "Bird", status: "Least Concern", location: "Periyar", season: "Spring", description: "A radiant bird known for courtship displays and ringing calls.", image: "https://p2.piqsels.com/preview/271/444/951/peacock-bird-plumage-pheasant.jpg", imagePosition: "center 35%" },
-  { name: "Great Hornbill", category: "Bird", status: "Vulnerable", location: "Thattekad", season: "Summer", description: "A huge forest bird with a golden casque and heavy wingbeats.", image: "https://images.unsplash.com/photo-1564349683136-77e08dba1ef7?auto=format&fit=crop&w=900&q=80" },
+  { name: "Great Hornbill", category: "Bird", status: "Vulnerable", location: "Thattekad", season: "Summer", description: "A huge forest bird with a golden casque and heavy wingbeats.", image: "https://media.istockphoto.com/id/1356304155/photo/the-great-hornbill-also-known-as-the-concave-casqued-hornbill-great-indian-hornbill-or-great.jpg?s=612x612&w=0&k=20&c=8Fw2EZSOVp6fdEnp6JnExC_kTeWAkrXpHd154w47Uuo=" },
   { name: "King Cobra", category: "Reptile", status: "Vulnerable", location: "Eravikulam", season: "Monsoon", description: "A long, alert forest serpent and one of the world's most iconic reptiles.", image: "https://www.worldatlas.com/r/w768/upload/50/54/3a/shutterstock-2653816315-s3cdn.jpg", imagePosition: "center 28%" }
 ];
 
@@ -20,13 +20,29 @@ const places = [
 ];
 
 const encounters = [
-  { animal: "Asian Elephant", location: "Periyar", date: "2026-09-19", labelDate: "19 September 2026", time: "6:42 PM", season: "Monsoon", image: animals[0].image },
-  { animal: "Sambar Deer", location: "Wayanad", date: "2026-08-12", labelDate: "12 August 2026", time: "7:15 AM", season: "Monsoon", image: animals[3].image },
-  { animal: "Indian Gaur", location: "Silent Valley", date: "2026-07-02", labelDate: "02 July 2026", time: "5:30 PM", season: "Monsoon", image: animals[5].image },
-  { animal: "Bengal Tiger", location: "Wayanad", date: "2026-01-24", labelDate: "24 January 2026", time: "6:10 AM", season: "Winter", image: animals[1].image },
-  { animal: "Indian Peafowl", location: "Periyar", date: "2026-03-15", labelDate: "15 March 2026", time: "8:05 AM", season: "Spring", image: animals[7].image },
-  { animal: "King Cobra", location: "Eravikulam", date: "2026-06-08", labelDate: "08 June 2026", time: "4:20 PM", season: "Summer", image: animals[9].image }
+  { id: "asian-elephant-periyar-2026-09-19", animal: "Asian Elephant", location: "Periyar", date: "2026-09-19", labelDate: "19 September 2026", time: "6:42 PM", season: "Monsoon", image: animals[0].image, observation: "A small herd crossed the damp teak path near the lake edge, moving calmly after evening rain." },
+  { id: "sambar-deer-wayanad-2026-08-12", animal: "Sambar Deer", location: "Wayanad", date: "2026-08-12", labelDate: "12 August 2026", time: "7:15 AM", season: "Monsoon", image: animals[3].image, observation: "A lone stag paused at the bamboo edge before slipping back into the shaded Wayanad corridor." },
+  { id: "indian-gaur-silent-valley-2026-07-02", animal: "Indian Gaur", location: "Silent Valley", date: "2026-07-02", labelDate: "02 July 2026", time: "5:30 PM", season: "Monsoon", image: animals[5].image, observation: "A heavy-shouldered gaur grazed near a wet clearing while mist gathered under the rainforest canopy." },
+  { id: "bengal-tiger-wayanad-2026-01-24", animal: "Bengal Tiger", location: "Wayanad", date: "2026-01-24", labelDate: "24 January 2026", time: "6:10 AM", season: "Winter", image: animals[1].image, observation: "Fresh pugmarks and a brief striped flash marked a winter patrol route beside the forest track." },
+  { id: "indian-peafowl-periyar-2026-03-15", animal: "Indian Peafowl", location: "Periyar", date: "2026-03-15", labelDate: "15 March 2026", time: "8:05 AM", season: "Spring", image: animals[7].image, observation: "A peafowl crossed the open lawn in bright morning light, tail train dragging through short grass." },
+  { id: "king-cobra-eravikulam-2026-06-08", animal: "King Cobra", location: "Eravikulam", date: "2026-06-08", labelDate: "08 June 2026", time: "4:20 PM", season: "Summer", image: animals[9].image, observation: "The cobra lifted its hood near a warm trail margin before easing into cover away from the path." }
 ];
+
+const mapTargets = {
+  Periyar: "Periyar Tiger Reserve, Thekkady, Kerala, India",
+  Wayanad: "Wayanad Wildlife Sanctuary, Kerala, India",
+  "Silent Valley": "Silent Valley National Park, Kerala, India",
+  Thattekad: "Thattekkad Bird Sanctuary, Kerala, India",
+  Eravikulam: "Eravikulam National Park, Kerala, India"
+};
+
+const mapPinPositions = {
+  Periyar: { x: 48, y: 65 },
+  Wayanad: { x: 31, y: 36 },
+  "Silent Valley": { x: 47, y: 43 },
+  Thattekad: { x: 63, y: 52 },
+  Eravikulam: { x: 58, y: 57 }
+};
 
 const suggestions = {
   Periyar: ["Asian Elephant", "Sambar Deer"],
@@ -49,6 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
   buildNavigation();
   setActiveNavigation();
   initThemeToggle();
+  initAuthModal();
   initCommonDateTime();
 
   const page = document.body.dataset.page;
@@ -62,6 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (page === "identifier") initIdentifier();
   if (page === "my-wildlife") initMyWildlife();
   if (page === "encounter") initEncounterForm();
+  if (page === "encounter-details") initEncounterDetails();
   if (page === "insights") initInsights();
   initReveal();
   initCounters();
@@ -72,7 +90,7 @@ function buildNavigation() {
   if (!emptyHeader) return;
   emptyHeader.innerHTML = `
     <nav class="nav-shell">
-      <a class="logo" href="index.html"><span>🐾</span> Wildlife Explorer</a>
+      <a class="logo" href="index.html"><span>🐾</span> Wild Life Seasonal Tracker</a>
       <button class="menu-toggle" aria-label="Open navigation"><span></span><span></span><span></span></button>
       <div class="nav-links">
         <a href="index.html" data-nav="home">Home</a>
@@ -82,9 +100,20 @@ function buildNavigation() {
         <a href="identifier.html" data-nav="identifier">Identifier</a>
         <a href="my-wildlife.html" data-nav="my-wildlife">My Wildlife</a>
         <a href="insights.html" data-nav="insights">Insights</a>
-        <a href="conservation.html" data-nav="conservation">Conservation</a>
         <button class="theme-toggle" type="button" aria-label="Switch to dark mode" title="Switch theme"><span class="theme-icon">☾</span></button>
         <a class="btn btn-primary nav-cta" href="encounter.html">+ Record Encounter</a>
+        <div class="account-menu">
+          <button class="account-button" type="button" aria-label="Open account menu" aria-expanded="false"><span></span></button>
+          <div class="account-panel">
+            <strong id="accountName">Guest</strong>
+            <p id="accountEmail">No email</p>
+            <div class="account-auth-actions">
+              <button class="btn btn-light auth-trigger" type="button" data-auth-mode="login">Login</button>
+              <button class="btn btn-primary auth-trigger" type="button" data-auth-mode="register">Register</button>
+            </div>
+            <button class="btn btn-light auth-logout" type="button">Logout</button>
+          </div>
+        </div>
       </div>
     </nav>`;
 }
@@ -123,6 +152,216 @@ function initThemeToggle() {
   });
 
   sync();
+}
+
+function initAuthModal() {
+  if (!document.getElementById("authModal")) {
+    document.body.insertAdjacentHTML("beforeend", `
+      <div class="auth-modal" id="authModal" aria-hidden="true">
+        <div class="auth-card" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+          <button class="auth-close" type="button" aria-label="Close login form">×</button>
+          <div class="auth-illustration" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </div>
+          <div class="auth-tabs">
+            <button class="active" type="button" data-auth-mode="login">Login</button>
+            <button type="button" data-auth-mode="register">Register</button>
+          </div>
+          <form id="authForm" class="auth-form">
+            <p class="eyebrow" id="authEyebrow">Welcome Back</p>
+            <h2 id="authTitle">Login</h2>
+            <label>Email<input id="authEmail" type="email" autocomplete="email" placeholder="you@example.com" required></label>
+            <label>Username<input id="authUsername" type="text" autocomplete="username" placeholder="Enter username" required></label>
+            <label>Password
+              <div class="password-field">
+                <input id="authPassword" type="password" autocomplete="current-password" placeholder="Enter password" required>
+                <button class="password-toggle" type="button" aria-label="Show password">Show</button>
+              </div>
+            </label>
+            <button class="btn btn-primary" id="authSubmit" type="submit">Login</button>
+            <p class="auth-message" id="authMessage" aria-live="polite"></p>
+          </form>
+        </div>
+      </div>`);
+  }
+
+  const modal = document.getElementById("authModal");
+  const form = document.getElementById("authForm");
+  const title = document.getElementById("authTitle");
+  const eyebrow = document.getElementById("authEyebrow");
+  const password = document.getElementById("authPassword");
+  const submit = document.getElementById("authSubmit");
+  const message = document.getElementById("authMessage");
+  const emailInput = document.getElementById("authEmail");
+  const usernameInput = document.getElementById("authUsername");
+  const accountMenu = document.querySelector(".account-menu");
+  const accountButton = document.querySelector(".account-button");
+  const accountName = document.getElementById("accountName");
+  const accountEmail = document.getElementById("accountEmail");
+  const accountAuthActions = document.querySelector(".account-auth-actions");
+  const logoutButton = document.querySelector(".auth-logout");
+  const passwordToggle = document.querySelector(".password-toggle");
+  const getUsers = () => JSON.parse(localStorage.getItem("wildlife-users") || "{}");
+  const saveUsers = users => localStorage.setItem("wildlife-users", JSON.stringify(users));
+  const setSession = username => localStorage.setItem("wildlife-session", username);
+  const clearSession = () => localStorage.removeItem("wildlife-session");
+  const closeAccountMenu = () => {
+    if (!accountMenu || !accountButton) return;
+    accountMenu.classList.remove("open");
+    accountButton.setAttribute("aria-expanded", "false");
+  };
+  let mode = "login";
+
+  const syncAuthState = () => {
+    const activeUser = localStorage.getItem("wildlife-session");
+    const users = getUsers();
+    const user = activeUser ? users[activeUser] : null;
+    document.querySelectorAll(".auth-trigger").forEach(button => {
+      button.hidden = Boolean(activeUser);
+    });
+    if (accountAuthActions) accountAuthActions.hidden = Boolean(activeUser);
+    if (logoutButton) logoutButton.hidden = !activeUser;
+    if (accountName) accountName.textContent = activeUser || "Account";
+    if (accountEmail) accountEmail.textContent = user?.email || "Sign in or create an account";
+    if (!activeUser) closeAccountMenu();
+  };
+
+  const findUserByEmail = (users, email) => {
+    const cleanEmail = email.toLowerCase();
+    return Object.entries(users).find(([, user]) => (user.email || "").toLowerCase() === cleanEmail);
+  };
+
+  const setPasswordVisible = visible => {
+    password.type = visible ? "text" : "password";
+    if (passwordToggle) {
+      passwordToggle.textContent = visible ? "Hide" : "Show";
+      passwordToggle.setAttribute("aria-label", visible ? "Hide password" : "Show password");
+    }
+  };
+
+  const setMode = nextMode => {
+    mode = nextMode;
+    const isRegister = mode === "register";
+    title.textContent = isRegister ? "Create Account" : "Login";
+    eyebrow.textContent = isRegister ? "Start Tracking" : "Welcome Back";
+    password.autocomplete = isRegister ? "new-password" : "current-password";
+    usernameInput.required = true;
+    usernameInput.placeholder = isRegister ? "Choose username" : "Enter username";
+    submit.textContent = isRegister ? "Register" : "Login";
+    message.textContent = "";
+    message.classList.remove("error");
+    form.reset();
+    setPasswordVisible(false);
+    document.querySelectorAll("[data-auth-mode]").forEach(button => {
+      button.classList.toggle("active", button.dataset.authMode === mode && button.closest(".auth-tabs"));
+    });
+  };
+
+  const openModal = nextMode => {
+    setMode(nextMode);
+    modal.classList.add("open");
+    modal.setAttribute("aria-hidden", "false");
+    emailInput.focus();
+  };
+
+  const closeModal = () => {
+    modal.classList.remove("open");
+    modal.setAttribute("aria-hidden", "true");
+  };
+
+  document.querySelectorAll(".auth-trigger").forEach(button => {
+    button.addEventListener("click", () => {
+      closeAccountMenu();
+      openModal(button.dataset.authMode);
+    });
+  });
+  document.querySelectorAll(".auth-tabs button").forEach(button => {
+    button.addEventListener("click", () => setMode(button.dataset.authMode));
+  });
+  document.querySelector(".auth-close").addEventListener("click", closeModal);
+  if (passwordToggle) {
+    passwordToggle.addEventListener("click", () => setPasswordVisible(password.type === "password"));
+  }
+  if (accountButton && accountMenu) {
+    accountButton.addEventListener("click", event => {
+      event.stopPropagation();
+      const isOpen = accountMenu.classList.toggle("open");
+      accountButton.setAttribute("aria-expanded", String(isOpen));
+    });
+  }
+  if (logoutButton) {
+    logoutButton.addEventListener("click", () => {
+      clearSession();
+      closeAccountMenu();
+      syncAuthState();
+    });
+  }
+  modal.addEventListener("click", event => {
+    if (event.target === modal) closeModal();
+  });
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && modal.classList.contains("open")) closeModal();
+    if (event.key === "Escape") closeAccountMenu();
+  });
+  document.addEventListener("click", event => {
+    if (accountMenu && !accountMenu.contains(event.target)) closeAccountMenu();
+  });
+  form.addEventListener("submit", event => {
+    event.preventDefault();
+    const email = emailInput.value.trim().toLowerCase();
+    const username = usernameInput.value.trim();
+    const passwordValue = password.value;
+    const users = getUsers();
+
+    if (!emailInput.checkValidity()) {
+      message.textContent = "Enter a valid email address.";
+      message.classList.add("error");
+      return;
+    }
+    if (username.length < 3) {
+      message.textContent = "Username needs at least 3 characters.";
+      message.classList.add("error");
+      return;
+    }
+    if (passwordValue.length < 4) {
+      message.textContent = "Password needs at least 4 characters.";
+      message.classList.add("error");
+      return;
+    }
+
+    if (mode === "register") {
+      if (users[username]) {
+        message.textContent = "That username is already registered.";
+        message.classList.add("error");
+        return;
+      }
+      if (findUserByEmail(users, email)) {
+        message.textContent = "That email is already registered.";
+        message.classList.add("error");
+        return;
+      }
+      users[username] = { email, password: passwordValue, createdAt: new Date().toISOString() };
+      saveUsers(users);
+      setSession(username);
+      message.textContent = `Registered as ${username}.`;
+    } else {
+      const user = users[username];
+      if (!user || user.password !== passwordValue || (user.email || "").toLowerCase() !== email) {
+        message.textContent = "Email, username, or password is wrong.";
+        message.classList.add("error");
+        return;
+      }
+      setSession(username);
+      message.textContent = `Logged in as ${username}.`;
+    }
+
+    message.classList.remove("error");
+    form.classList.remove("pulse");
+    requestAnimationFrame(() => form.classList.add("pulse"));
+    syncAuthState();
+    setTimeout(closeModal, 650);
+  });
+  syncAuthState();
 }
 
 function initReveal() {
@@ -247,7 +486,7 @@ function initAnimalGuide() {
   const animal = animals.find(item => item.name.toLowerCase() === requestedAnimal.toLowerCase()) || animals[0];
   const details = getAnimalDetails(animal);
 
-  document.title = `Wildlife Explorer | ${animal.name}`;
+  document.title = `Wild Life Seasonal Tracker | ${animal.name}`;
   document.getElementById("animalHero").style.setProperty("--hero", `url('${animal.image.replace("w=900", "w=1800")}')`);
   document.getElementById("animalHero").style.backgroundPosition = `center, ${animal.imagePosition || "center"}, center`;
   document.getElementById("animalName").textContent = animal.name;
@@ -265,6 +504,7 @@ function initAnimalGuide() {
     <article class="stat-card reveal"><strong data-count="${details.locations}">0</strong><span>Locations</span></article>
     <article class="stat-card reveal"><strong data-count="${details.seasons}">0</strong><span>Seasons</span></article>`;
   document.getElementById("animalTimeline").innerHTML = details.timeline.map(item => `<div><time>${item.date}</time><strong>${item.place}</strong><span>${item.time}</span></div>`).join("");
+  document.querySelector('a[href="animal-map.html"]').href = `animal-map.html?animal=${encodeURIComponent(animal.name)}`;
 }
 
 function getAnimalDetails(animal) {
@@ -335,7 +575,7 @@ function initPlaceGuide() {
   const details = getPlaceDetails(place);
   const foundAnimals = animals.filter(animal => details.wildlife.includes(animal.name) || animal.location === place.name);
 
-  document.title = `Wildlife Explorer | ${place.name}`;
+  document.title = `Wild Life Seasonal Tracker | ${place.name}`;
   document.getElementById("placeHero").style.setProperty("--hero", `url('${place.image.replace("w=1000", "w=1800")}')`);
   document.getElementById("placeName").textContent = place.name;
   document.getElementById("placeSubtitle").textContent = details.subtitle;
@@ -396,17 +636,75 @@ function getPlaceDetails(place) {
 }
 
 function initMap() {
-  const popup = document.getElementById("mapPopup");
-  document.querySelectorAll(".map-pin").forEach(pin => {
-    pin.addEventListener("click", () => {
-      const rect = pin.getBoundingClientRect();
-      const mapRect = pin.parentElement.getBoundingClientRect();
-      popup.style.left = `${Math.min(72, Math.max(4, ((rect.left - mapRect.left) / mapRect.width) * 100))}%`;
-      popup.style.top = `${Math.min(78, Math.max(4, ((rect.top - mapRect.top) / mapRect.height) * 100 + 7))}%`;
-      popup.innerHTML = `<strong>Asian Elephant</strong><span>${pin.dataset.place}</span><span>19 September 2026</span><span>6:42 PM</span><span>Monsoon</span>`;
-      popup.classList.add("open");
+  const frame = document.getElementById("googleMapFrame");
+  const list = document.getElementById("mapLocationList");
+  const pinLayer = document.getElementById("mapPinLayer");
+  const externalLink = document.getElementById("mapExternalLink");
+  const title = document.getElementById("mapTitle");
+  const subtitle = document.getElementById("mapSubtitle");
+  const stats = document.getElementById("mapStats");
+  const journey = document.getElementById("mapJourney");
+  if (!frame || !list || !pinLayer || !externalLink || !title || !subtitle || !stats || !journey) return;
+
+  const mappedEncounters = encounters;
+
+  document.title = "Wild Life Seasonal Tracker | All Wildlife Sighting Map";
+  title.textContent = "All Wildlife Sighting Map";
+  subtitle.textContent = "Pins show all recorded animal sighting locations.";
+
+  const locationNames = [...new Set(mappedEncounters.map(item => item.location))];
+  const seasonCount = new Set(mappedEncounters.map(item => item.season)).size;
+  const setLocation = location => {
+    frame.src = googleMapsEmbedUrl(location);
+    frame.title = `Google map of ${mapTargets[location] || location}`;
+    externalLink.href = googleMapsUrl(location);
+    document.querySelectorAll(".map-location-button").forEach(button => {
+      button.classList.toggle("active", button.dataset.location === location);
     });
+    document.querySelectorAll(".sighting-pin").forEach(pin => {
+      pin.classList.toggle("active", pin.dataset.location === location);
+    });
+  };
+
+  list.innerHTML = locationNames.map(location => {
+    const locationEncounters = mappedEncounters.filter(item => item.location === location);
+    const sightingCount = locationEncounters.length;
+    const animalNames = [...new Set(locationEncounters.map(item => item.animal))].join(", ");
+    const label = `${sightingCount} ${sightingCount === 1 ? "sighting" : "sightings"}`;
+    return `
+      <button class="map-location-button" type="button" data-location="${location}">
+        <strong>${location}</strong>
+        <span>${mapTargets[location] || location}</span>
+        <span>${label}</span>
+        <em>${animalNames}</em>
+      </button>`;
+  }).join("");
+  pinLayer.innerHTML = locationNames.map(location => {
+    const position = mapPinPositions[location] || { x: 50, y: 50 };
+    const locationEncounters = mappedEncounters.filter(item => item.location === location);
+    const animalNames = [...new Set(locationEncounters.map(item => item.animal))].join(", ");
+    const label = `${location}: ${animalNames}`;
+    return `
+      <button class="sighting-pin" type="button" data-location="${location}" style="left:${position.x}%;top:${position.y}%" aria-label="${label}">
+        <strong>${location}</strong>
+        <span>${animalNames}</span>
+      </button>`;
+  }).join("");
+
+  stats.innerHTML = `
+    <article class="stat-card reveal visible"><strong>${mappedEncounters.length}</strong><span>Total Sightings</span></article>
+    <article class="stat-card reveal visible"><strong>${locationNames.length}</strong><span>Locations</span></article>
+    <article class="stat-card reveal visible"><strong>${seasonCount}</strong><span>Seasons</span></article>`;
+  journey.innerHTML = locationNames.join(" <span>→</span> ");
+
+  document.querySelectorAll(".map-location-button").forEach(button => {
+    button.addEventListener("click", () => setLocation(button.dataset.location));
   });
+  document.querySelectorAll(".sighting-pin").forEach(pin => {
+    pin.addEventListener("click", () => setLocation(pin.dataset.location));
+  });
+
+  setLocation(locationNames[0]);
 }
 
 function initSeasons() {
@@ -480,10 +778,29 @@ function renderEncounters() {
         <h3>${item.animal}</h3>
         <p>${item.location}</p>
         <div class="meta-line"><span>${item.labelDate}</span><span>${item.time}</span><span>${item.season}</span></div>
-        <a class="btn btn-primary" href="encounter-details.html">View Details</a>
+        <a class="btn btn-primary" href="encounter-details.html?encounter=${encodeURIComponent(item.id)}">View Details</a>
       </div>
     </article>`).join("") || `<p class="empty-state">No encounters match those filters.</p>`;
   animateInserted(grid);
+}
+
+function initEncounterDetails() {
+  const params = new URLSearchParams(window.location.search);
+  const requestedEncounter = params.get("encounter");
+  const requestedAnimal = params.get("animal");
+  const encounter = encounters.find(item => item.id === requestedEncounter) ||
+    encounters.find(item => item.animal.toLowerCase() === (requestedAnimal || "").toLowerCase()) ||
+    encounters[0];
+  const animal = animals.find(item => item.name === encounter.animal) || animals[0];
+
+  document.title = `Wild Life Seasonal Tracker | ${encounter.animal} Encounter`;
+  document.getElementById("encounterHero").style.setProperty("--hero", `url('${encounter.image.replace("w=900", "w=1800")}')`);
+  document.getElementById("encounterAnimal").textContent = encounter.animal;
+  document.getElementById("encounterMeta").textContent = `📍 ${encounter.location}   📅 ${encounter.labelDate}   🕐 ${encounter.time}   ${seasonIcon(encounter.season)} ${encounter.season}`;
+  document.getElementById("encounterObservation").textContent = encounter.observation;
+  document.getElementById("encounterStatus").textContent = animal.status;
+  document.getElementById("encounterLocation").textContent = mapTargets[encounter.location] || encounter.location;
+  document.getElementById("encounterMap").href = googleMapsUrl(encounter.location);
 }
 
 function initEncounterForm() {
@@ -555,6 +872,25 @@ function getSeason(date) {
   if ([6, 7].includes(month)) return "Summer";
   if ([8, 9, 10].includes(month)) return "Monsoon";
   return "Winter";
+}
+
+function seasonIcon(season) {
+  return {
+    Spring: "🌸",
+    Summer: "☀️",
+    Monsoon: "🌧️",
+    Winter: "❄️"
+  }[season] || "📍";
+}
+
+function googleMapsUrl(location) {
+  const query = mapTargets[location] || location;
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+}
+
+function googleMapsEmbedUrl(location) {
+  const query = mapTargets[location] || location;
+  return `https://www.google.com/maps?q=${encodeURIComponent(query)}&output=embed`;
 }
 
 function formatDate(date) {
