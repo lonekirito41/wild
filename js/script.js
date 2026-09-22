@@ -590,7 +590,6 @@ function initPlaceGuide() {
   const placeAnimals = document.getElementById("placeAnimals");
   placeAnimals.innerHTML = foundAnimals.slice(0, 6).map(animalCard).join("");
   animateInserted(placeAnimals);
-  document.getElementById("placeSeasons").innerHTML = ["Spring", "Summer", "Monsoon", "Winter"].map(season => `<span class="${season === details.bestSeason ? "active" : ""}">${season}</span>`).join("");
 }
 
 function getPlaceDetails(place) {
@@ -717,13 +716,6 @@ function initSeasons() {
       item.style.animationDelay = `${index * 55}ms`;
     });
   };
-  document.querySelectorAll("#seasonCards button").forEach(button => {
-    button.addEventListener("click", () => {
-      document.querySelectorAll("#seasonCards button").forEach(item => item.classList.remove("active"));
-      button.classList.add("active");
-      render(button.dataset.season);
-    });
-  });
   render("Monsoon");
 }
 
