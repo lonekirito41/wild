@@ -79,7 +79,7 @@ html[data-theme="dark"] .site-header {
   margin: 0 auto;
   padding: 14px 22px;
   display: grid;
-  grid-template-columns: minmax(260px, 1fr) auto minmax(150px, 1fr);
+  grid-template-columns: minmax(260px, 1fr) auto minmax(52px, 1fr);
   align-items: center;
   justify-content: center;
   gap: 22px;
@@ -207,9 +207,8 @@ html[data-theme="dark"] .menu-toggle {
 }
 
 .account-menu {
-  position: fixed;
-  top: 26px;
-  right: 22px;
+  position: relative;
+  justify-self: end;
   z-index: 70;
 }
 
@@ -273,7 +272,12 @@ html[data-theme="dark"] .menu-toggle {
   transition: opacity .2s ease, transform .2s ease;
 }
 
+.account-menu:not(.open) .account-panel {
+  visibility: hidden;
+}
+
 .account-menu.open .account-panel {
+  visibility: visible;
   opacity: 1;
   pointer-events: auto;
   transform: translateY(0) scale(1);
