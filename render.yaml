@@ -1,0 +1,41 @@
+services:
+  - type: web
+    name: wildlife-tracker
+    runtime: docker
+    region: singapore
+    plan: 1c-2g
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/animals
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: postgres
+      - key: COOKIE_SECURE
+        value: "true"
+      - key: DB_HOST
+        fromDatabase:
+          name: wildlife-tracker-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: wildlife-tracker-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: wildlife-tracker-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: wildlife-tracker-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: wildlife-tracker-db
+          property: password
+
+databases:
+  - name: wildlife-tracker-db
+    region: singapore
+    plan: 0.1c-256mb
+    databaseName: wildlife_tracker
+    user: wildlife_tracker

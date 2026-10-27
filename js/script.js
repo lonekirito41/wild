@@ -82,7 +82,7 @@ async function loadBackendData() {
   if (!backendReady) {
     const notice = document.createElement("p");
     notice.className = "backend-notice";
-    notice.textContent = "The wildlife database is unavailable. Start the Wildlife Tracker app from Codex to load live data.";
+    notice.textContent = "Wildlife data is temporarily unavailable. Refresh the page in a moment.";
     notice.setAttribute("role", "status");
     document.body.prepend(notice);
   }
