@@ -12,4 +12,4 @@ FROM eclipse-temurin:21-jre
 WORKDIR /app
 COPY --from=build /workspace/backend/target/wildlife-tracker-api-1.0.0.jar /app/app.jar
 EXPOSE 10000
-ENTRYPOINT ["sh", "-c", "if [ -n \"${DB_HOST:-}\" ]; then export DB_URL=\"jdbc:postgresql://${DB_HOST}:${DB_PORT:-5432}/${DB_NAME}\"; fi; exec java -XX:MaxRAMPercentage=75 -jar /app/app.jar"]
+ENTRYPOINT ["java", "-XX:MaxRAMPercentage=40", "-XX:MaxMetaspaceSize=112m", "-XX:ReservedCodeCacheSize=32m", "-Xss256k", "-jar", "/app/app.jar"]
