@@ -471,6 +471,15 @@ html[data-theme="dark"] .auth-card {
   color: #9a2f1d;
 }
 
+.backend-notice {
+  margin: 0;
+  padding: 10px 18px;
+  color: #563819;
+  background: #f6e5bd;
+  text-align: center;
+  font-weight: 700;
+}
+
 .auth-form.pulse {
   animation: authPulse .42s ease;
 }
@@ -764,7 +773,7 @@ html[data-theme="dark"] .season-cards button {
   margin-bottom: 22px;
 }
 
-.search-input, input, select {
+.search-input, input, select, textarea {
   min-height: 48px;
   padding: 12px 14px;
   border: 1px solid var(--line);
@@ -776,7 +785,8 @@ html[data-theme="dark"] .season-cards button {
 
 html[data-theme="dark"] .search-input,
 html[data-theme="dark"] input,
-html[data-theme="dark"] select {
+html[data-theme="dark"] select,
+html[data-theme="dark"] textarea {
   background: rgba(7, 17, 14, .72);
   color: var(--charcoal);
 }
@@ -1138,6 +1148,8 @@ html[data-theme="dark"] select {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
 }
+.form-grid .full-width { grid-column: 1 / -1; }
+textarea { width: 100%; min-height: 96px; resize: vertical; }
 label { display: grid; gap: 7px; color: var(--forest); font-weight: 850; }
 
 .time-field {

@@ -1,4 +1,4 @@
-const animals = [
+let animals = [
   { name: "Asian Elephant", category: "Mammal", status: "Endangered", location: "Periyar", season: "Monsoon", description: "A social giant of forest edges, wetlands, and grasslands.", image: "https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?auto=format&fit=crop&w=900&q=80" },
   { name: "Bengal Tiger", category: "Mammal", status: "Endangered", location: "Wayanad", season: "Winter", description: "A powerful apex predator that moves silently through dense cover.", image: "https://images.unsplash.com/photo-1549480017-d76466a4b7e8?auto=format&fit=crop&w=900&q=80" },
   { name: "Indian Leopard", category: "Mammal", status: "Vulnerable", location: "Silent Valley", season: "Summer", description: "An adaptable spotted cat often seen near rocky forest corridors.", image: "https://images.unsplash.com/photo-1544979590-37e9b47eb705?auto=format&fit=crop&w=900&q=80" },
@@ -11,7 +11,7 @@ const animals = [
   { name: "King Cobra", category: "Reptile", status: "Vulnerable", location: "Eravikulam", season: "Monsoon", description: "A long, alert forest serpent and one of the world's most iconic reptiles.", image: "https://www.worldatlas.com/r/w768/upload/50/54/3a/shutterstock-2653816315-s3cdn.jpg", imagePosition: "center 28%" }
 ];
 
-const places = [
+let places = [
   { name: "Periyar", habitat: "Lake forest and wet evergreen edges", encounters: 39, image: "https://images.unsplash.com/photo-1511497584788-876760111969?auto=format&fit=crop&w=1000&q=80" },
   { name: "Wayanad", habitat: "Moist deciduous forest corridors", encounters: 27, image: "https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1000&q=80" },
   { name: "Silent Valley", habitat: "Rainforest, streams, and canopy trails", encounters: 21, image: "https://images.unsplash.com/photo-1503435980610-a51f3ddfee50?auto=format&fit=crop&w=1000&q=80" },
@@ -19,7 +19,7 @@ const places = [
   { name: "Eravikulam", habitat: "High grassland and shola forest", encounters: 14, image: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1000&q=80" }
 ];
 
-const encounters = [
+let encounters = [
   { id: "asian-elephant-periyar-2026-09-19", animal: "Asian Elephant", location: "Periyar", date: "2026-09-19", labelDate: "19 September 2026", time: "6:42 PM", season: "Monsoon", image: animals[0].image, observation: "A small herd crossed the damp teak path near the lake edge, moving calmly after evening rain." },
   { id: "sambar-deer-wayanad-2026-08-12", animal: "Sambar Deer", location: "Wayanad", date: "2026-08-12", labelDate: "12 August 2026", time: "7:15 AM", season: "Monsoon", image: animals[3].image, observation: "A lone stag paused at the bamboo edge before slipping back into the shaded Wayanad corridor." },
   { id: "indian-gaur-silent-valley-2026-07-02", animal: "Indian Gaur", location: "Silent Valley", date: "2026-07-02", labelDate: "02 July 2026", time: "5:30 PM", season: "Monsoon", image: animals[5].image, observation: "A heavy-shouldered gaur grazed near a wet clearing while mist gathered under the rainforest canopy." },
@@ -36,32 +36,60 @@ const mapTargets = {
   Eravikulam: "Eravikulam National Park, Kerala, India"
 };
 
-const mapPinPositions = {
-  Periyar: { x: 48, y: 65 },
-  Wayanad: { x: 31, y: 36 },
-  "Silent Valley": { x: 47, y: 43 },
-  Thattekad: { x: 63, y: 52 },
-  Eravikulam: { x: 58, y: 57 }
-};
-
-const suggestions = {
-  Periyar: ["Asian Elephant", "Sambar Deer"],
-  Wayanad: ["Sambar Deer", "Bengal Tiger"],
-  "Silent Valley": ["Indian Gaur", "Indian Leopard"],
-  Thattekad: ["Great Hornbill", "Malabar Giant Squirrel"],
-  Eravikulam: ["King Cobra", "Indian Gaur"]
-};
-
-const seasonWildlife = {
-  Spring: ["Indian Peafowl", "Spotted Deer", "Great Hornbill", "Indian Leopard"],
-  Summer: ["Bengal Tiger", "Great Hornbill", "Indian Leopard", "Spotted Deer"],
-  Monsoon: ["Asian Elephant", "Sambar Deer", "Indian Gaur", "Malabar Giant Squirrel"],
-  Winter: ["Bengal Tiger", "Sambar Deer", "Spotted Deer", "Indian Peafowl"]
-};
-
 applySavedTheme();
 
-document.addEventListener("DOMContentLoaded", () => {
+const API_BASE = window.WILDLIFE_API_BASE || (location.port === "8080" ? "" : "http://localhost:8080");
+let backendReady = false;
+let currentAccount = null;
+
+async function apiRequest(path, options = {}) {
+  const response = await fetch(`${API_BASE}/api${path}`, {
+    credentials: "include",
+    ...options,
+    headers: { "Content-Type": "application/json", ...(options.headers || {}) }
+  });
+  const result = response.status === 204 ? null : await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(result.message || result.detail || "The request could not be completed.");
+  return result;
+}
+
+async function loadBackendData() {
+  try {
+    const [species, locations] = await Promise.all([apiRequest("/animals"), apiRequest("/locations")]);
+    animals = species;
+    places = locations.map(place => ({ ...place, encounters: 0 }));
+    places.forEach(place => { mapTargets[place.name] = place.mapQuery; });
+    backendReady = true;
+    try {
+      currentAccount = await apiRequest("/auth/me");
+    } catch (_) {
+      currentAccount = null;
+    }
+    if (currentAccount) {
+      try {
+        encounters = await apiRequest("/observations");
+        places.forEach(place => { place.encounters = encounters.filter(item => item.location === place.name).length; });
+      } catch (_) {
+        encounters = [];
+      }
+    } else {
+      encounters = [];
+    }
+  } catch (_) {
+    backendReady = false;
+    encounters = [];
+  }
+  if (!backendReady) {
+    const notice = document.createElement("p");
+    notice.className = "backend-notice";
+    notice.textContent = "The wildlife database is unavailable. Start the Wildlife Tracker app from Codex to load live data.";
+    notice.setAttribute("role", "status");
+    document.body.prepend(notice);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+  await loadBackendData();
   buildNavigation();
   setActiveNavigation();
   initThemeToggle();
@@ -201,10 +229,9 @@ function initAuthModal() {
   const accountAuthActions = document.querySelector(".account-auth-actions");
   const logoutButton = document.querySelector(".auth-logout");
   const passwordToggle = document.querySelector(".password-toggle");
-  const getUsers = () => JSON.parse(localStorage.getItem("wildlife-users") || "{}");
-  const saveUsers = users => localStorage.setItem("wildlife-users", JSON.stringify(users));
-  const setSession = username => localStorage.setItem("wildlife-session", username);
-  const clearSession = () => localStorage.removeItem("wildlife-session");
+  const api = async (path, options = {}) => {
+    return apiRequest(`/auth${path}`, options);
+  };
   const closeAccountMenu = () => {
     if (!accountMenu || !accountButton) return;
     accountMenu.classList.remove("open");
@@ -212,23 +239,17 @@ function initAuthModal() {
   };
   let mode = "login";
 
-  const syncAuthState = () => {
-    const activeUser = localStorage.getItem("wildlife-session");
-    const users = getUsers();
-    const user = activeUser ? users[activeUser] : null;
+  const syncAuthState = user => {
+    currentAccount = user || null;
+    const activeUser = user?.username;
     document.querySelectorAll(".auth-trigger").forEach(button => {
       button.hidden = Boolean(activeUser);
     });
     if (accountAuthActions) accountAuthActions.hidden = Boolean(activeUser);
     if (logoutButton) logoutButton.hidden = !activeUser;
-    if (accountName) accountName.textContent = activeUser || "Account";
+    if (accountName) accountName.textContent = activeUser || "Guest";
     if (accountEmail) accountEmail.textContent = user?.email || "Sign in or create an account";
     if (!activeUser) closeAccountMenu();
-  };
-
-  const findUserByEmail = (users, email) => {
-    const cleanEmail = email.toLowerCase();
-    return Object.entries(users).find(([, user]) => (user.email || "").toLowerCase() === cleanEmail);
   };
 
   const setPasswordVisible = visible => {
@@ -290,10 +311,11 @@ function initAuthModal() {
     });
   }
   if (logoutButton) {
-    logoutButton.addEventListener("click", () => {
-      clearSession();
+    logoutButton.addEventListener("click", async () => {
+      try { await api("/logout", { method: "POST" }); } catch (_) { /* Clear the local view even if the server is unreachable. */ }
       closeAccountMenu();
-      syncAuthState();
+      syncAuthState(null);
+      window.location.reload();
     });
   }
   modal.addEventListener("click", event => {
@@ -306,12 +328,11 @@ function initAuthModal() {
   document.addEventListener("click", event => {
     if (accountMenu && !accountMenu.contains(event.target)) closeAccountMenu();
   });
-  form.addEventListener("submit", event => {
+  form.addEventListener("submit", async event => {
     event.preventDefault();
     const email = emailInput.value.trim().toLowerCase();
     const username = usernameInput.value.trim();
     const passwordValue = password.value;
-    const users = getUsers();
 
     if (!emailInput.checkValidity()) {
       message.textContent = "Enter a valid email address.";
@@ -323,45 +344,37 @@ function initAuthModal() {
       message.classList.add("error");
       return;
     }
-    if (passwordValue.length < 4) {
-      message.textContent = "Password needs at least 4 characters.";
+    if (passwordValue.length < 8) {
+      message.textContent = "Password needs at least 8 characters.";
       message.classList.add("error");
       return;
     }
 
-    if (mode === "register") {
-      if (users[username]) {
-        message.textContent = "That username is already registered.";
-        message.classList.add("error");
-        return;
-      }
-      if (findUserByEmail(users, email)) {
-        message.textContent = "That email is already registered.";
-        message.classList.add("error");
-        return;
-      }
-      users[username] = { email, password: passwordValue, createdAt: new Date().toISOString() };
-      saveUsers(users);
-      setSession(username);
-      message.textContent = `Registered as ${username}.`;
-    } else {
-      const user = users[username];
-      if (!user || user.password !== passwordValue || (user.email || "").toLowerCase() !== email) {
-        message.textContent = "Email, username, or password is wrong.";
-        message.classList.add("error");
-        return;
-      }
-      setSession(username);
-      message.textContent = `Logged in as ${username}.`;
+    submit.disabled = true;
+    message.textContent = "Connecting securely…";
+    try {
+      const user = await api(mode === "register" ? "/register" : "/login", {
+        method: "POST",
+        body: JSON.stringify({ email, username, password: passwordValue })
+      });
+      message.textContent = mode === "register" ? `Account created for ${user.username}.` : `Welcome back, ${user.username}.`;
+      message.classList.remove("error");
+      form.classList.remove("pulse");
+      requestAnimationFrame(() => form.classList.add("pulse"));
+      syncAuthState(user);
+      try {
+        encounters = await apiRequest("/observations");
+        places.forEach(place => { place.encounters = encounters.filter(item => item.location === place.name).length; });
+      } catch (_) { encounters = []; }
+      setTimeout(() => window.location.reload(), 650);
+    } catch (error) {
+      message.textContent = error.message;
+      message.classList.add("error");
+    } finally {
+      submit.disabled = false;
     }
-
-    message.classList.remove("error");
-    form.classList.remove("pulse");
-    requestAnimationFrame(() => form.classList.add("pulse"));
-    syncAuthState();
-    setTimeout(closeModal, 650);
   });
-  syncAuthState();
+  syncAuthState(currentAccount);
 }
 
 function initReveal() {
@@ -421,10 +434,27 @@ function initCommonDateTime() {
 }
 
 function initHome() {
+  const latest = encounters[0];
+  const recentAnimal = document.getElementById("recentEncounterAnimal");
+  const recentLocation = document.getElementById("recentEncounterLocation");
+  if (recentAnimal && recentLocation) {
+    recentAnimal.textContent = latest?.animal || "No observations yet";
+    recentLocation.textContent = latest ? latest.location : currentAccount ? "Record your first wildlife encounter." : "Sign in to view your personal observations.";
+    document.getElementById("recentEncounterDate").textContent = latest?.labelDate || "";
+    document.getElementById("recentEncounterTime").textContent = latest?.time || "";
+    document.getElementById("recentEncounterSeason").textContent = latest?.season || "";
+    document.getElementById("recentEncounterLink").href = latest ? `encounter-details.html?encounter=${encodeURIComponent(latest.id)}` : "encounter.html";
+    if (latest) {
+      document.getElementById("recentEncounterImage").src = latest.image;
+      document.getElementById("recentEncounterImage").alt = latest.animal;
+    }
+  }
   const stats = [
-    ["🐘", "Asian Elephant", "Last Reported Animal"],
-    ["📍", "Periyar", "Last Reported Location"],
+    ["🐾", latest?.animal || "—", "Latest Observed Animal"],
+    ["📍", latest?.location || "—", "Latest Observation Location"],
     ["🌦️", getSeason(new Date()), "Current Season"],
+    ["🗒️", String(encounters.length), "Your Encounters"],
+    ["🐾", String(encounters.reduce((sum,item)=>sum+item.count,0)), "Individual Animals Observed"],
     ["📅", `<span data-current-date>${formatDate(new Date())}</span>`, "Today's Date"],
     ["🕐", `<span data-current-time></span>`, "Current Time"]
   ];
@@ -483,7 +513,13 @@ function animalCard(animal) {
 
 function initAnimalGuide() {
   const requestedAnimal = new URLSearchParams(window.location.search).get("animal") || "Asian Elephant";
-  const animal = animals.find(item => item.name.toLowerCase() === requestedAnimal.toLowerCase()) || animals[0];
+  const animal = animals.find(item => item.name.toLowerCase() === requestedAnimal.toLowerCase());
+  if (!animal) {
+    document.getElementById("animalName").textContent = "Animal not found";
+    document.getElementById("animalCategory").textContent = "This species is not in the wildlife catalog.";
+    document.getElementById("animalFacts").replaceChildren();
+    return;
+  }
   const details = getAnimalDetails(animal);
 
   document.title = `Wild Life Seasonal Tracker | ${animal.name}`;
@@ -499,11 +535,14 @@ function initAnimalGuide() {
   document.getElementById("animalBehaviour").textContent = details.behaviour;
   document.getElementById("animalFacts").innerHTML = details.facts.map(fact => `<article class="fact-card reveal">${fact}</article>`).join("");
   document.getElementById("animalRecordTitle").textContent = `Your ${animal.name} Record`;
+  const animalObservations = encounters.filter(item => item.animal === animal.name);
+  const uniqueLocations = new Set(animalObservations.map(item => item.location)).size;
+  const uniqueSeasons = new Set(animalObservations.map(item => item.season)).size;
   document.getElementById("animalSummary").innerHTML = `
-    <article class="stat-card reveal"><strong data-count="${details.sightings}">0</strong><span>Total Sightings</span></article>
-    <article class="stat-card reveal"><strong data-count="${details.locations}">0</strong><span>Locations</span></article>
-    <article class="stat-card reveal"><strong data-count="${details.seasons}">0</strong><span>Seasons</span></article>`;
-  document.getElementById("animalTimeline").innerHTML = details.timeline.map(item => `<div><time>${item.date}</time><strong>${item.place}</strong><span>${item.time}</span></div>`).join("");
+    <article class="stat-card reveal"><strong>${animalObservations.length}</strong><span>Your Encounters</span></article>
+    <article class="stat-card reveal"><strong>${uniqueLocations}</strong><span>Locations</span></article>
+    <article class="stat-card reveal"><strong>${uniqueSeasons}</strong><span>Seasons</span></article>`;
+  document.getElementById("animalTimeline").innerHTML = animalObservations.slice(0, 10).map(item => `<div><time>${item.labelDate}</time><strong>${item.location}</strong><span>${item.time}</span></div>`).join("") || `<p class="empty-state">No encounters for this animal yet.</p>`;
   document.querySelector('a[href="animal-map.html"]').href = `animal-map.html?animal=${encodeURIComponent(animal.name)}`;
 }
 
@@ -544,10 +583,10 @@ function getAnimalDetails(animal) {
   };
 
   return guideDetails[animal.name] || {
-    habitat: `${animal.location} habitat zones and nearby forest corridors.`,
+    habitat: animal.habitat || "Forest, wetland, or grassland habitat listed for this species.",
     diet: animal.category === "Bird" ? "Fruit, seeds, insects, and seasonal forest food." : animal.category === "Reptile" ? "Small animals and forest prey." : "Forest plants, fruits, or prey depending on the species.",
     behaviour: animal.description,
-    facts: [`${animal.name} is most often logged around ${animal.location}.`, `${animal.season} is a strong season for this guide in your observations.`, `Its conservation status is listed as ${animal.status}.`],
+      facts: [animal.description, `Your guide lists this species as ${animal.status}.`, "Observation summaries below come from records in your account."],
     sightings: 3,
     locations: 2,
     seasons: 2,
@@ -562,7 +601,7 @@ function initPlaces() {
       <div class="card-body">
         <h3>${place.name}</h3>
         <p>${place.habitat}</p>
-        <p>${place.encounters} recorded encounters</p>
+        <p>${place.encounters || 0} of your recorded encounters</p>
         <a class="btn btn-light" href="place.html?place=${encodeURIComponent(place.name)}">Explore</a>
       </div>
     </article>`).join("");
@@ -571,7 +610,11 @@ function initPlaces() {
 
 function initPlaceGuide() {
   const requestedPlace = new URLSearchParams(window.location.search).get("place") || "Periyar";
-  const place = places.find(item => item.name.toLowerCase() === requestedPlace.toLowerCase()) || places[0];
+  const place = places.find(item => item.name.toLowerCase() === requestedPlace.toLowerCase());
+  if (!place) {
+    document.getElementById("placeName").textContent = "Location not found";
+    return;
+  }
   const details = getPlaceDetails(place);
   const foundAnimals = animals.filter(animal => details.wildlife.includes(animal.name) || animal.location === place.name);
 
@@ -579,16 +622,18 @@ function initPlaceGuide() {
   document.getElementById("placeHero").style.setProperty("--hero", `url('${place.image.replace("w=1000", "w=1800")}')`);
   document.getElementById("placeName").textContent = place.name;
   document.getElementById("placeSubtitle").textContent = details.subtitle;
-  document.getElementById("placeHabitat").textContent = details.habitat;
-  document.getElementById("placeCommonWildlife").textContent = details.wildlife.join(", ");
-  document.getElementById("placeBestSeason").textContent = details.bestSeason;
-  document.getElementById("placeEncounters").textContent = `${place.encounters} observations`;
-  document.getElementById("placeMedals").innerHTML = `
-    <article class="medal-card reveal"><span>🥇</span><p>Most Frequently Observed</p><h3>${details.top[0].name}</h3><strong>${details.top[0].sightings} sightings</strong></article>
-    <article class="medal-card reveal"><span>🥈</span><p>Second Most Observed</p><h3>${details.top[1].name}</h3><strong>${details.top[1].sightings} sightings</strong></article>`;
+  document.getElementById("placeHabitat").textContent = place.habitat || details.habitat;
+  const locationObservations = encounters.filter(item => item.location === place.name);
+  const seenSpecies = [...new Set(locationObservations.map(item => item.animal))];
+  document.getElementById("placeCommonWildlife").textContent = seenSpecies.join(", ") || "No observations recorded yet";
+  const seasonRank=Object.entries(locationObservations.reduce((counts,item)=>{counts[item.season]=(counts[item.season]||0)+1;return counts;},{})).sort((a,b)=>b[1]-a[1]);
+  document.getElementById("placeBestSeason").textContent = seasonRank[0]?.[0] || "No observations yet";
+  document.getElementById("placeEncounters").textContent = `${locationObservations.length} of your observations`;
+  const ranked = Object.entries(locationObservations.reduce((counts,item) => { counts[item.animal]=(counts[item.animal]||0)+1; return counts; },{})).sort((a,b)=>b[1]-a[1]);
+  document.getElementById("placeMedals").innerHTML = ranked.slice(0,2).map(([name,count],index)=>`<article class="medal-card reveal"><span>${index===0?"🥇":"🥈"}</span><p>${index===0?"Most Frequently Observed":"Second Most Observed"}</p><h3>${name}</h3><strong>${count} encounters</strong></article>`).join("") || `<p class="empty-state">Your location statistics will appear after you record observations.</p>`;
   document.getElementById("placeSpeciesTitle").textContent = `${place.name} Species`;
   const placeAnimals = document.getElementById("placeAnimals");
-  placeAnimals.innerHTML = foundAnimals.slice(0, 6).map(animalCard).join("");
+  placeAnimals.innerHTML = (seenSpecies.length ? animals.filter(item => seenSpecies.includes(item.name)) : foundAnimals.slice(0, 6)).map(animalCard).join("");
   animateInserted(placeAnimals);
 }
 
@@ -645,11 +690,11 @@ function initMap() {
   const journey = document.getElementById("mapJourney");
   if (!frame || !list || !pinLayer || !externalLink || !title || !subtitle || !stats || !journey) return;
 
-  const mappedEncounters = encounters;
-
-  document.title = "Wild Life Seasonal Tracker | All Wildlife Sighting Map";
-  title.textContent = "All Wildlife Sighting Map";
-  subtitle.textContent = "Pins show all recorded animal sighting locations.";
+  const requestedAnimal = new URLSearchParams(window.location.search).get("animal");
+  const mappedEncounters = requestedAnimal ? encounters.filter(item => item.animal.toLowerCase() === requestedAnimal.toLowerCase()) : encounters;
+  document.title = `Wild Life Seasonal Tracker | ${requestedAnimal || "Wildlife Sighting Map"}`;
+  title.textContent = requestedAnimal ? `${requestedAnimal} Sighting Map` : "Your Wildlife Sighting Map";
+  subtitle.textContent = requestedAnimal ? `Locations from your ${requestedAnimal} observations.` : "Locations from your recorded observations.";
 
   const locationNames = [...new Set(mappedEncounters.map(item => item.location))];
   const seasonCount = new Set(mappedEncounters.map(item => item.season)).size;
@@ -678,17 +723,7 @@ function initMap() {
         <em>${animalNames}</em>
       </button>`;
   }).join("");
-  pinLayer.innerHTML = locationNames.map(location => {
-    const position = mapPinPositions[location] || { x: 50, y: 50 };
-    const locationEncounters = mappedEncounters.filter(item => item.location === location);
-    const animalNames = [...new Set(locationEncounters.map(item => item.animal))].join(", ");
-    const label = `${location}: ${animalNames}`;
-    return `
-      <button class="sighting-pin" type="button" data-location="${location}" style="left:${position.x}%;top:${position.y}%" aria-label="${label}">
-        <strong>${location}</strong>
-        <span>${animalNames}</span>
-      </button>`;
-  }).join("");
+  pinLayer.replaceChildren();
 
   stats.innerHTML = `
     <article class="stat-card reveal visible"><strong>${mappedEncounters.length}</strong><span>Total Sightings</span></article>
@@ -703,49 +738,67 @@ function initMap() {
     pin.addEventListener("click", () => setLocation(pin.dataset.location));
   });
 
+  if (!locationNames.length) {
+    list.innerHTML = `<p class="empty-state">${currentAccount ? "No observations to map yet." : "Sign in to view your observation map."}</p>`;
+    stats.innerHTML = `<article class="stat-card"><strong>0</strong><span>Observations</span></article><article class="stat-card"><strong>0</strong><span>Locations</span></article><article class="stat-card"><strong>0</strong><span>Seasons</span></article>`;
+    journey.textContent = "";
+    externalLink.style.display = "none";
+    frame.src = "about:blank";
+    return;
+  }
+  externalLink.style.display = "";
   setLocation(locationNames[0]);
 }
 
 function initSeasons() {
   const title = document.getElementById("seasonTitle");
   const list = document.getElementById("seasonWildlife");
+  const select = document.getElementById("seasonSelect");
   const render = season => {
     title.textContent = `${season} Wildlife`;
-    list.innerHTML = seasonWildlife[season].map(item => `<span>${item}</span>`).join("");
+    const seasonRecords = encounters.filter(item => item.season === season);
+    const animalsThisSeason = [...new Set(seasonRecords.map(item => item.animal))];
+    list.innerHTML = animalsThisSeason.length ? animalsThisSeason.map(item => `<a href="animal.html?animal=${encodeURIComponent(item)}">${item}</a>`).join("") : `<p class="empty-state">No ${season.toLowerCase()} observations in your account yet.</p>`;
     [...list.children].forEach((item, index) => {
       item.style.animationDelay = `${index * 55}ms`;
     });
+    const stats = document.getElementById("seasonStats");
+    if (stats) stats.innerHTML = `<article class="stat-card reveal"><strong>${seasonRecords.length}</strong><span>Encounters</span></article><article class="stat-card reveal"><strong>${animalsThisSeason.length}</strong><span>Animals</span></article><article class="stat-card reveal"><strong>${new Set(seasonRecords.map(item=>item.location)).size}</strong><span>Locations</span></article>`;
   };
-  render("Monsoon");
+  if (select) {
+    select.onchange = () => render(select.value);
+    render(select.value || "Monsoon");
+  } else render("Monsoon");
 }
 
 function initIdentifier() {
   const location = document.getElementById("identifierLocation");
-  const render = () => document.getElementById("identifierSuggestions").innerHTML = suggestionMarkup(location.value);
+  const animal = document.getElementById("identifierAnimal");
+  location.innerHTML=`<option value="">All locations</option>${places.map(item=>`<option value="${item.name}">${item.name}</option>`).join("")}`;
+  [...new Set(encounters.map(item=>item.animal))].sort().forEach(name=>animal.insertAdjacentHTML("beforeend",`<option>${name}</option>`));
+  const render = () => {
+    const results = encounters.filter(item => (!location.value || item.location === location.value) && (!animal.value || item.animal === animal.value));
+    const counts = Object.entries(results.reduce((value,item)=>{value[item.animal]=(value[item.animal]||0)+1;return value;},{})).sort((a,b)=>b[1]-a[1]);
+    document.getElementById("identifierSuggestions").innerHTML = counts.map(([name,count],index)=>`<article class="suggestion-card"><span>${index===0?"🥇":"🐾"}</span><h3>${name}</h3><p>${count} matching ${count===1?"observation":"observations"} in your records</p><a class="btn btn-primary" href="animal.html?animal=${encodeURIComponent(name)}">View Animal Guide</a></article>`).join("") || `<p class="empty-state">No matching observations in your account. Record a sighting to build your wildlife list.</p>`;
+  };
   location.addEventListener("change", render);
+  animal.addEventListener("change", render);
   render();
-}
-
-function suggestionMarkup(location) {
-  const picks = suggestions[location] || suggestions.Periyar;
-  return picks.map((name, index) => `
-    <article class="suggestion-card">
-      <span>${index === 0 ? "🥇" : "🥈"}</span>
-      <h3>${name}</h3>
-      <p>${index === 0 ? "Most frequently observed at this location" : "Second most frequently observed at this location"}</p>
-      <a class="btn btn-primary" href="${index === 0 ? `animal.html?animal=${encodeURIComponent(name)}` : `place.html?place=${encodeURIComponent(location)}`}">${index === 0 ? "View Animal Guide" : "Explore Location"}</a>
-    </article>`).join("");
 }
 
 function initMyWildlife() {
   const animalFilter = document.getElementById("animalFilter");
   const locationFilter = document.getElementById("locationFilter");
+  animalFilter.querySelectorAll("option:not(:first-child)").forEach(option=>option.remove());
+  locationFilter.querySelectorAll("option:not(:first-child)").forEach(option=>option.remove());
   [...new Set(encounters.map(item => item.animal))].forEach(name => animalFilter.insertAdjacentHTML("beforeend", `<option>${name}</option>`));
   [...new Set(encounters.map(item => item.location))].forEach(name => locationFilter.insertAdjacentHTML("beforeend", `<option>${name}</option>`));
 
   ["encounterSearch", "animalFilter", "locationFilter", "seasonFilter", "dateFilter"].forEach(id => {
     document.getElementById(id).addEventListener("input", renderEncounters);
   });
+  const statGrid=document.getElementById("myWildlifeStats");
+  statGrid.innerHTML=`<article class="stat-card reveal"><strong>${encounters.length}</strong><span>Total Encounters</span></article><article class="stat-card reveal"><strong>${new Set(encounters.map(item=>item.animal)).size}</strong><span>Animals</span></article><article class="stat-card reveal"><strong>${new Set(encounters.map(item=>item.location)).size}</strong><span>Locations</span></article><article class="stat-card reveal"><strong>${new Set(encounters.map(item=>item.season)).size}</strong><span>Seasons</span></article>`;
   renderEncounters();
 }
 
@@ -769,10 +822,22 @@ function renderEncounters() {
       <div class="card-body">
         <h3>${item.animal}</h3>
         <p>${item.location}</p>
-        <div class="meta-line"><span>${item.labelDate}</span><span>${item.time}</span><span>${item.season}</span></div>
-        <a class="btn btn-primary" href="encounter-details.html?encounter=${encodeURIComponent(item.id)}">View Details</a>
+        <div class="meta-line"><span>${item.labelDate}</span><span>${item.time}</span><span>${item.season}</span><span>${item.count} individual${item.count===1?"":"s"}</span></div>
+        <div class="card-actions"><a class="btn btn-primary" href="encounter-details.html?encounter=${encodeURIComponent(item.id)}">View Details</a><a class="btn btn-light" href="encounter.html?edit=${encodeURIComponent(item.id)}">Edit</a><button class="btn btn-light delete-observation" type="button" data-observation-id="${item.id}">Delete</button></div>
       </div>
     </article>`).join("") || `<p class="empty-state">No encounters match those filters.</p>`;
+  grid.querySelectorAll(".delete-observation").forEach(button=>button.addEventListener("click",async()=>{
+    if(!window.confirm("Delete this observation? This cannot be undone.")) return;
+    button.disabled=true;
+    try {
+      await apiRequest(`/observations/${button.dataset.observationId}`,{method:"DELETE"});
+      encounters=encounters.filter(item=>String(item.id)!==button.dataset.observationId);
+      const stats=document.getElementById("myWildlifeStats");
+      stats.innerHTML=`<article class="stat-card reveal"><strong>${encounters.length}</strong><span>Total Encounters</span></article><article class="stat-card reveal"><strong>${new Set(encounters.map(item=>item.animal)).size}</strong><span>Animals</span></article><article class="stat-card reveal"><strong>${new Set(encounters.map(item=>item.location)).size}</strong><span>Locations</span></article><article class="stat-card reveal"><strong>${new Set(encounters.map(item=>item.season)).size}</strong><span>Seasons</span></article>`;
+      renderEncounters();
+    }
+    catch(error) { button.disabled=false; window.alert(error.message); }
+  }));
   animateInserted(grid);
 }
 
@@ -780,15 +845,19 @@ function initEncounterDetails() {
   const params = new URLSearchParams(window.location.search);
   const requestedEncounter = params.get("encounter");
   const requestedAnimal = params.get("animal");
-  const encounter = encounters.find(item => item.id === requestedEncounter) ||
-    encounters.find(item => item.animal.toLowerCase() === (requestedAnimal || "").toLowerCase()) ||
-    encounters[0];
+  const encounter = encounters.find(item => String(item.id) === requestedEncounter) ||
+    encounters.find(item => item.animal.toLowerCase() === (requestedAnimal || "").toLowerCase());
+  if (!encounter) {
+    document.getElementById("encounterAnimal").textContent = "Observation not found";
+    document.getElementById("encounterObservation").textContent = currentAccount ? "This observation is unavailable or no longer belongs to your account." : "Sign in to view your observations.";
+    return;
+  }
   const animal = animals.find(item => item.name === encounter.animal) || animals[0];
 
   document.title = `Wild Life Seasonal Tracker | ${encounter.animal} Encounter`;
   document.getElementById("encounterHero").style.setProperty("--hero", `url('${encounter.image.replace("w=900", "w=1800")}')`);
   document.getElementById("encounterAnimal").textContent = encounter.animal;
-  document.getElementById("encounterMeta").textContent = `📍 ${encounter.location}   📅 ${encounter.labelDate}   🕐 ${encounter.time}   ${seasonIcon(encounter.season)} ${encounter.season}`;
+  document.getElementById("encounterMeta").textContent = `📍 ${encounter.location}   📅 ${encounter.labelDate}   🕐 ${encounter.time}   ${seasonIcon(encounter.season)} ${encounter.season}   🐾 ${encounter.count} individual${encounter.count===1?"":"s"}`;
   document.getElementById("encounterObservation").textContent = encounter.observation;
   document.getElementById("encounterStatus").textContent = animal.status;
   document.getElementById("encounterLocation").textContent = mapTargets[encounter.location] || encounter.location;
@@ -809,6 +878,22 @@ function initEncounterForm() {
   const animal = document.getElementById("recordAnimal");
   const location = document.getElementById("recordLocation");
   const warning = document.getElementById("sensitiveWarning");
+  animal.innerHTML = animals.map(item=>`<option value="${item.id}">${item.name}</option>`).join("");
+  location.innerHTML = places.map(item=>`<option value="${item.id}">${item.name}</option>`).join("");
+  const editId=new URLSearchParams(window.location.search).get("edit");
+  const editRecord=editId?encounters.find(item=>String(item.id)===editId):null;
+  if(editId&&!editRecord) {
+    document.getElementById("encounterMessage").textContent="That observation could not be found in your account.";
+    document.querySelector('#encounterForm [type="submit"]').disabled=true;
+  }
+  if(editRecord){
+    animal.value=String(editRecord.animalId); location.value=String(editRecord.locationId);
+    dateInput.value=editRecord.date; timeInput.value=editRecord.time24||"12:00";
+    document.getElementById("recordCount").value=editRecord.count;
+    document.getElementById("recordNotes").value=editRecord.observation||"";
+    document.querySelector(".page-title h1").textContent="Edit Observation";
+    document.querySelector('#encounterForm [type="submit"]').textContent="Save Changes";
+  }
   const syncTimeStyle = () => {
     const hour = Number((timeInput.value || "12:00").split(":")[0]);
     timePeriod.textContent = hour >= 12 ? "PM" : "AM";
@@ -818,8 +903,9 @@ function initEncounterForm() {
     });
   };
   const render = () => {
-    document.getElementById("recordSuggestions").innerHTML = suggestionMarkup(location.value).replaceAll("View Animal Guide", "Select Elephant").replaceAll("Explore Location", "Select Sambar");
-    warning.classList.toggle("show", ["Bengal Tiger", "King Cobra", "Asian Elephant"].includes(animal.value));
+    const selectedAnimal=animals.find(item=>String(item.id)===animal.value);
+    document.getElementById("recordSuggestions").innerHTML = selectedAnimal ? `<article class="suggestion-card"><span>🐾</span><h3>${selectedAnimal.name}</h3><p>${selectedAnimal.description}</p></article>` : "";
+    warning.classList.toggle("show", ["Bengal Tiger", "King Cobra", "Asian Elephant"].includes(selectedAnimal?.name));
   };
 
   dateInput.addEventListener("change", () => {
@@ -834,9 +920,32 @@ function initEncounterForm() {
   });
   animal.addEventListener("change", render);
   location.addEventListener("change", render);
-  document.getElementById("encounterForm").addEventListener("submit", event => {
+  document.getElementById("encounterForm").addEventListener("submit", async event => {
     event.preventDefault();
-    document.getElementById("successModal").classList.add("open");
+    const message=document.getElementById("encounterMessage");
+    if(!currentAccount){
+      message.textContent="Sign in to save your observation.";
+      document.querySelector('.auth-trigger[data-auth-mode="login"]')?.click();
+      return;
+    }
+    const submit=event.currentTarget.querySelector('[type="submit"]');
+    submit.disabled=true;
+    message.textContent="Saving observation…";
+    try {
+      const created=await apiRequest(`/observations${editRecord?`/${editRecord.id}`:""}`,{method:editRecord?"PUT":"POST",body:JSON.stringify({
+        animalId:Number(animal.value),locationId:Number(location.value),date:dateInput.value,time:timeInput.value,
+        count:Math.max(1,Number(document.getElementById("recordCount")?.value||1)),
+        observation:document.getElementById("recordNotes").value.trim(),
+        sensitiveLocation:["Bengal Tiger","King Cobra","Asian Elephant"].includes(animals.find(item=>String(item.id)===animal.value)?.name)
+      })});
+      if(editRecord) encounters=encounters.map(item=>String(item.id)===String(created.id)?created:item); else encounters.unshift(created);
+      message.textContent="";
+      document.getElementById("successModal").classList.add("open");
+      setTimeout(()=>{window.location.href="my-wildlife.html";},1100);
+    } catch(error) {
+      message.textContent=error.message;
+      message.classList.add("error");
+    } finally { submit.disabled=false; }
   });
   document.querySelector(".modal-close").addEventListener("click", () => document.getElementById("successModal").classList.remove("open"));
   document.getElementById("successModal").addEventListener("click", event => {
@@ -847,15 +956,16 @@ function initEncounterForm() {
 }
 
 function initInsights() {
-  const data = [
-    ["Asian Elephant", 12],
-    ["Sambar Deer", 8],
-    ["Spotted Deer", 6],
-    ["Indian Gaur", 4]
-  ];
-  const max = Math.max(...data.map(item => item[1]));
-  document.getElementById("animalBars").innerHTML = data.map(([name, value]) => `
-    <div class="bar-row"><strong>${name}</strong><div class="bar-track"><div class="bar-fill" style="width:${(value / max) * 100}%"></div></div><span>${value}</span></div>`).join("");
+  const data=Object.entries(encounters.reduce((counts,item)=>{counts[item.animal]=(counts[item.animal]||0)+1;return counts;},{})).sort((a,b)=>b[1]-a[1]);
+  const max=Math.max(1,...data.map(item=>item[1]));
+  document.getElementById("animalBars").innerHTML=data.map(([name,value])=>`<div class="bar-row"><strong>${name}</strong><div class="bar-track"><div class="bar-fill" style="width:${(value/max)*100}%"></div></div><span>${value}</span></div>`).join("")||`<p class="empty-state">Your animal insights will appear after you record observations.</p>`;
+  const seasons=["Spring","Summer","Monsoon","Winter"].map(season=>[season,encounters.filter(item=>item.season===season).length]);
+  const maxSeason=Math.max(1,...seasons.map(item=>item[1]));
+  document.getElementById("seasonBars").innerHTML=seasons.map(([season,value])=>`<span style="height:${Math.max(4,(value/maxSeason)*100)}%" title="${value} encounters">${season}</span>`).join("");
+  const statGrid=document.getElementById("insightStats");
+  const activeSeason=seasons.sort((a,b)=>b[1]-a[1])[0];
+  statGrid.innerHTML=`<article class="stat-card reveal"><strong>${encounters.length}</strong><span>Total Encounters</span></article><article class="stat-card reveal"><strong>${new Set(encounters.map(item=>item.animal)).size}</strong><span>Unique Animals</span></article><article class="stat-card reveal"><strong>${new Set(encounters.map(item=>item.location)).size}</strong><span>Locations Explored</span></article><article class="stat-card reveal"><strong>${activeSeason?.[1]?activeSeason[0]:"—"}</strong><span>Most Active Season</span></article>`;
+  document.getElementById("insightTimeline").innerHTML=encounters.slice(0,8).map(item=>`<div><time>${item.labelDate}</time><strong>${item.animal}</strong><span>${item.location}</span></div>`).join("")||`<p class="empty-state">Your recent observations will appear here.</p>`;
 }
 
 function getSeason(date) {

@@ -10,6 +10,7 @@
         <div class="form-grid">
           <label>What did you see?<select id="recordAnimal"><option>Asian Elephant</option><option>Sambar Deer</option><option>Bengal Tiger</option><option>King Cobra</option></select></label>
           <label>Where did you see it?<select id="recordLocation"><option>Periyar</option><option>Wayanad</option><option>Silent Valley</option><option>Eravikulam</option></select></label>
+          <label>Number of animals<input id="recordCount" type="number" min="1" max="10000" value="1" required></label>
           <label>Date<input id="recordDate" type="date"></label>
           <label class="time-field">Time
             <div class="fancy-time">
@@ -25,10 +26,12 @@
             </div>
           </label>
           <label>Season<select id="recordSeason"><option>Spring</option><option>Summer</option><option>Monsoon</option><option>Winter</option></select></label>
+          <label class="full-width">Observation notes<textarea id="recordNotes" rows="3" maxlength="2000" placeholder="What did you observe? (optional)"></textarea></label>
         </div>
         <div class="suggestion-panel" id="recordSuggestions"></div>
-        <div class="warning-card" id="sensitiveWarning">⚠️ <strong>Conservation-sensitive observation</strong><p>For sensitive wildlife, avoid publicly sharing exact locations.</p><label>Google Maps Link<input type="url" placeholder="Paste Google Maps link"></label></div>
+    <div class="warning-card" id="sensitiveWarning">⚠️ <strong>Conservation-sensitive observation</strong><p>The record will show the protected area only. Do not publish precise locations for sensitive wildlife.</p></div>
         <button class="btn btn-primary" type="submit">Record Encounter</button>
+        <p class="auth-message" id="encounterMessage" aria-live="polite"></p>
       </form>
     </section>
     <div class="modal" id="successModal"><div class="modal-card"><button class="modal-close" aria-label="Close modal">×</button><div class="success-icon">✓</div><h2>Encounter Recorded</h2><p>Your wildlife observation has been added.</p></div></div>
